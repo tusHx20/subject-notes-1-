@@ -124,32 +124,56 @@
       <button id="send-btn">Send</button>
     </div>
   </div>
+<script>
+  const apiKey = "YOUR_OPENAI_API_KEY"; // 🔁 Replace this with your actual API key
 
-  <!-- Chatbot Script -->
-  <script>
-    document.getElementById("chat-toggle").onclick = () => {
-      const box = document.getElementById("chat-box");
-      box.style.display = box.style.display === "none" ? "block" : "none";
-    };
+  document.getElementById("chat-toggle").onclick = () => {
+    const box = document.getElementById("chat-box");
+    box.style.display = box.style.display === "none" ? "block" : "none";
+  };
 
-    document.getElementById("send-btn").onclick = () => {
-      const input = document.getElementById("user-input");
-      const message = input.value.trim();
-      if (!message) return;
+  document.getElementById("send-btn").onclick = async () => {
+    const input = document.getElementById("user-input");
+    const message = input.value.trim();
+    if (!message) return;
 
-      appendMessage("You", message);
-      input.value = "";
+    appendMessage("You", message);
+    input.value = "";
 
-      appendMessage("Bot", "Typing...");
-    };
+    appendMessage("Bot", "Typing...");
 
-    function appendMessage(sender, text) {
-      const chat = document.getElementById("chat-messages");
-      const msg = document.createElement("div");
-      msg.innerHTML = `<strong>${sender}:</strong> ${text}`;
-      chat.appendChild(msg);
-      chat.scrollTop = chat.scrollHeight;
+    const reply = await getAIResponse(message);
+    document.getElementById("chat-messages").lastChild.innerHTML = `<strong>Bot:</strong> ${reply}`;
+  };
+
+  function appendMessage(sender, text) {
+    const chat = document.getElementById("chat-messages");
+    const msg = document.createElement("div");
+    msg.innerHTML = `<strong>${sender}:</strong> ${text}`;
+    chat.appendChild(msg);
+    chat.scrollTop = chat.scrollHeight;
+  }
+
+  async function getAIResponse(prompt) {
+    try {
+      const res = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify({
+          model: "gpt-3.5-turbo",
+          messages: [{ role: "user", content: prompt }],
+        }),
+      });
+
+      const data = await res.json();
+      return data.choices?.[0]?.message?.content || "Sorry, I couldn’t understand.";
+    } catch (err) {
+      return "Error: Unable to connect to AI.";
     }
-  </script>
+  }
+</script>
 </body>
 </html>
