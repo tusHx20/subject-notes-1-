@@ -17,6 +17,62 @@
         transform: translateY(0);
       }
     }
+
+    /* Chatbot Styles */
+    #chat-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      font-family: Arial, sans-serif;
+      z-index: 9999;
+    }
+
+    #chat-toggle {
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      background: #4a90e2;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    #chat-box {
+      width: 300px;
+      height: 400px;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      padding: 10px;
+      margin-top: 10px;
+    }
+
+    #chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      margin-bottom: 10px;
+      font-size: 14px;
+    }
+
+    #user-input {
+      width: 100%;
+      padding: 6px;
+      box-sizing: border-box;
+    }
+
+    #send-btn {
+      width: 100%;
+      padding: 6px;
+      background: #4a90e2;
+      color: white;
+      border: none;
+      cursor: pointer;
+      margin-top: 5px;
+    }
   </style>
 </head>
 <body class="bg-gradient-to-br from-blue-50 to-white min-h-screen p-6">
@@ -54,5 +110,42 @@
       </div>
     </div>
   </div>
+
+  <!-- Chatbot UI -->
+  <div id="chat-container">
+    <button id="chat-toggle">💬</button>
+    <div id="chat-box" style="display: none;">
+      <div id="chat-messages"></div>
+      <input type="text" id="user-input" placeholder="Ask me anything..." />
+      <button id="send-btn">Send</button>
+    </div>
+  </div>
+
+  <!-- Chatbot Script -->
+  <script>
+    document.getElementById("chat-toggle").onclick = () => {
+      const box = document.getElementById("chat-box");
+      box.style.display = box.style.display === "none" ? "block" : "none";
+    };
+
+    document.getElementById("send-btn").onclick = () => {
+      const input = document.getElementById("user-input");
+      const message = input.value.trim();
+      if (!message) return;
+
+      appendMessage("You", message);
+      input.value = "";
+
+      appendMessage("Bot", "Typing...");
+    };
+
+    function appendMessage(sender, text) {
+      const chat = document.getElementById("chat-messages");
+      const msg = document.createElement("div");
+      msg.innerHTML = `<strong>${sender}:</strong> ${text}`;
+      chat.appendChild(msg);
+      chat.scrollTop = chat.scrollHeight;
+    }
+  </script>
 </body>
 </html>
